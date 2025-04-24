@@ -57,7 +57,6 @@ export const getPlanById = async (planId) => {
 };
 
 export const updatePlan = async (planId, updatedData) => {
-  console.log('Updating plan with ID:', planId, 'and data:', updatedData);
   try {
     const plans = getPlansFromStorage();
     const index = plans.findIndex((p) => p.id === planId);

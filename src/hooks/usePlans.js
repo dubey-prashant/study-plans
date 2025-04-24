@@ -24,9 +24,14 @@ export const usePlans = () => {
 
   const addPlan = async (title, description) => {
     try {
-      const plan = await generateResponse(description);
+      const prompt = `Please create a detailed plan based on the following description: ${description}
+      
+      PS: generate a plan in html and dont write any explanation or any other text.  
+      `;
+      const plan = await generateResponse(prompt);
+      const newDesc = plan.replace(/^```html\s*/g, '').replace(/```$/g, '');
       console.log('Generated plan:', plan);
-      const newPlan = await createPlan({ title, description: plan });
+      const newPlan = await createPlan({ title, description: newDesc });
       setPlans((prevPlans) => [...prevPlans, newPlan]);
     } catch (err) {
       setError(err);

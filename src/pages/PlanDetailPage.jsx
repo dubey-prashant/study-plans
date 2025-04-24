@@ -33,6 +33,9 @@ const PlanDetailPage = () => {
     Suggestion: ${suggestion}
 
     Plan: ${localPlan.description}
+
+
+    PS: generate a plan in html and dont write any explanation or any other text.  
     `;
 
     try {
@@ -41,7 +44,9 @@ const PlanDetailPage = () => {
       // Update the plan with the suggestion
       const updatedPlan = {
         ...localPlan,
-        description: newDescription,
+        description: newDescription
+          .replace(/^```html\s*/g, '')
+          .replace(/```$/g, ''),
       };
 
       await updatePlan(id, updatedPlan);

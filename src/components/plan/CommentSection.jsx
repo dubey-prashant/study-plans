@@ -68,6 +68,11 @@ const CommentSection = ({
     return isApplyingSuggestion && processingCommentId === commentId;
   };
 
+  // Sort comments by date - newest first
+  const sortedComments = [...comments].sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
   return (
     <div className='bg-white rounded-lg shadow-md p-6'>
       {/* Add new comment */}
@@ -121,7 +126,7 @@ const CommentSection = ({
           </p>
         ) : (
           <div className='space-y-4'>
-            {comments.map((comment) => (
+            {sortedComments.map((comment) => (
               <div
                 key={comment.id}
                 className={`p-4 rounded-lg border ${

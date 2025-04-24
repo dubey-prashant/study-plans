@@ -1,6 +1,20 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+.ProseMirror {
+  min-height: 200px;
+  padding: 0.5rem;
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
 .ProseMirror:focus {
   outline: none;
 }
