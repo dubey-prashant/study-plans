@@ -396,7 +396,7 @@ const PlanSummary = ({ plan, onUpdatePlan }) => {
         )}
         <EditorContent
           editor={editor}
-          className='prose prose-sm max-w-none border border-gray-200 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[200px]'
+          className='overflow-x-auto prose prose-sm max-w-none border border-gray-200 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[200px]'
         />
       </div>
 
