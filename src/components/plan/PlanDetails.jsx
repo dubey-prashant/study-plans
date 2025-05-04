@@ -9,7 +9,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import Button from '../common/Button';
 import html2pdf from 'html2pdf.js';
 
-const PlanSummary = ({ plan, onUpdatePlan }) => {
+const PlanDetails = ({ plan, onUpdatePlan }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Initialize Tiptap editor with table extensions
@@ -138,9 +138,9 @@ const PlanSummary = ({ plan, onUpdatePlan }) => {
   };
 
   return (
-    <div className='bg-white rounded-lg shadow-md p-6 mb-6'>
+    <div className='bg-white rounded-lg border border-gray-100 shadow-md p-6 mb-6'>
       <div className='flex justify-between items-center mb-4'>
-        <h2 className='text-2xl font-bold text-gray-800'>{plan.title}</h2>
+        <h2 className='text-2xl font-bold text-gray-800'> </h2>
         <div className='flex space-x-2'>
           {!isEditing ? (
             <>
@@ -420,4 +420,4 @@ const PlanSummary = ({ plan, onUpdatePlan }) => {
   );
 };
 
-export default PlanSummary;
+export default PlanDetails;

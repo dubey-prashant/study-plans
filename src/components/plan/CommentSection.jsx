@@ -1,40 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../common/Button';
+import { getComments, addComment } from '../../services/commentService';
 
 const CommentSection = ({
   planId,
   onApplySuggestion,
   isApplyingSuggestion,
+  validationCompleted,
 }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [isSuggestion, setIsSuggestion] = useState(false);
   const [processingCommentId, setProcessingCommentId] = useState(null);
 
-  // Load comments (this would typically come from a database or API)
   useEffect(() => {
-    const fetchedComments = localStorage.getItem(`comments_${planId}`) || '[]';
-    setComments(JSON.parse(fetchedComments));
-  }, [planId]);
+    const fetchedComments = getComments(planId);
+    setComments(fetchedComments);
+  }, [planId, validationCompleted]);
 
   const saveComments = (updatedComments) => {
     localStorage.setItem(`comments_${planId}`, JSON.stringify(updatedComments));
     setComments(updatedComments);
   };
 
-  const handleAddComment = () => {
+  // Helper function to check if a string contains HTML
+  const containsHTML = (str) => {
+    return /<\/?[a-z][\s\S]*>/i.test(str);
+  };
+
+  const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
     const comment = {
-      id: Date.now(),
       text: newComment,
+      author: 'You',
       createdAt: new Date().toISOString(),
       isSuggestion,
-      isApplied: false,
+      isHTML: containsHTML(newComment),
     };
 
-    const updatedComments = [...comments, comment];
-    saveComments(updatedComments);
+    // Use the addComment service
+    const newCommentWithId = await addComment(planId, comment);
+
+    // Update local state
+    setComments((prevComments) => [...prevComments, newCommentWithId]);
     setNewComment('');
     setIsSuggestion(false);
   };
@@ -72,6 +81,22 @@ const CommentSection = ({
   const sortedComments = [...comments].sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
+
+  // Render comment text as HTML or plain text
+  const renderCommentText = (comment) => {
+    // For AI suggestions or any comment marked as HTML
+    if (comment.author === 'AI Assistant' || comment.isHTML) {
+      return (
+        <div
+          className='comment-content'
+          dangerouslySetInnerHTML={{ __html: comment.text }}
+        />
+      );
+    }
+
+    // For regular text comments
+    return <div className='comment-content'>{comment.text}</div>;
+  };
 
   return (
     <div className='bg-white rounded-lg shadow-md p-6'>
@@ -136,32 +161,87 @@ const CommentSection = ({
                 }`}
               >
                 <div className='flex justify-between items-start'>
-                  <div className='text-gray-800'>{comment.text}</div>
-                  {comment.isSuggestion && !comment.isApplied && (
-                    <Button
-                      onClick={() => handleApplySuggestion(comment.id)}
-                      className='ml-4 bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 rounded transition-colors duration-200'
-                      disabled={isApplyingSuggestion}
-                    >
-                      {isCommentProcessing(comment.id)
-                        ? 'Applying...'
-                        : 'Apply Suggestion'}
-                    </Button>
-                  )}
+                  <div className='text-gray-800 w-full comment-wrapper'>
+                    {renderCommentText(comment)}
+                  </div>
                 </div>
-                <div className='mt-2 flex justify-between text-xs text-gray-500'>
-                  <span>{new Date(comment.createdAt).toLocaleString()}</span>
-                  {comment.isApplied && (
-                    <span className='text-green-600 font-medium'>
-                      Applied to plan
-                    </span>
-                  )}
+                <div className='mt-4 flex justify-between items-center text-xs text-gray-500'>
+                  <div>
+                    <span className='font-medium'>{comment.author}</span> ·{' '}
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </div>
+                  <div className='flex items-center'>
+                    {comment.isApplied ? (
+                      <span className='text-green-600 font-medium'>
+                        Applied to plan ✓
+                      </span>
+                    ) : (
+                      comment.isSuggestion && (
+                        <Button
+                          onClick={() => handleApplySuggestion(comment.id)}
+                          className='ml-4 bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded transition-colors duration-200 flex items-center'
+                          disabled={isApplyingSuggestion}
+                        >
+                          {isCommentProcessing(comment.id) ? (
+                            <>
+                              <svg
+                                className='animate-spin -ml-1 mr-2 h-4 w-4 text-white'
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='none'
+                                viewBox='0 0 24 24'
+                              >
+                                <circle
+                                  className='opacity-25'
+                                  cx='12'
+                                  cy='12'
+                                  r='10'
+                                  stroke='currentColor'
+                                  strokeWidth='4'
+                                ></circle>
+                                <path
+                                  className='opacity-75'
+                                  fill='currentColor'
+                                  d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                                ></path>
+                              </svg>
+                              Applying...
+                            </>
+                          ) : (
+                            'Apply Suggestion'
+                          )}
+                        </Button>
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+      <style jsx>{`
+        .comment-wrapper ul {
+          list-style-type: disc;
+          padding-left: 1.5rem;
+          margin: 0.75rem 0;
+        }
+        .comment-wrapper ol {
+          list-style-type: decimal;
+          padding-left: 1.5rem;
+          margin: 0.75rem 0;
+        }
+        .comment-wrapper li {
+          margin-bottom: 0.5rem;
+        }
+        .comment-wrapper h3,
+        .comment-wrapper h4 {
+          font-weight: 600;
+          margin: 1rem 0 0.5rem 0;
+        }
+        .comment-wrapper p {
+          margin-bottom: 0.75rem;
+        }
+      `}</style>
     </div>
   );
 };
