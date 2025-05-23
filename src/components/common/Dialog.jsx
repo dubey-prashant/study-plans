@@ -33,10 +33,10 @@ const Dialog = ({ isOpen, onClose, title, children }) => {
   return (
     <div
       className='fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-all duration-300'
-      onClick={(e) => {
-        // Close when clicking outside the dialog
-        if (e.target === e.currentTarget) onClose();
-      }}
+      // onClick={(e) => {
+      //   // Close when clicking outside the dialog
+      //   // if (e.target === e.currentTarget) onClose();
+      // }}
       role='dialog'
       aria-modal='true'
       aria-labelledby='dialog-title'
@@ -60,7 +60,7 @@ const Dialog = ({ isOpen, onClose, title, children }) => {
               xmlns='http://www.w3.org/2000/svg'
               className='h-6 w-6'
               fill='none'
-              viewBox='0 24 24'
+              viewBox='0 0 24 24'
               stroke='currentColor'
             >
               <path

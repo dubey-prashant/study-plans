@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Dialog from '../common/Dialog';
 import Button from '../common/Button';
 
-const CreatePlanDialog = ({ isOpen, onClose, onCreate }) => {
+const CreatePlanDialog = ({ label, isOpen, onClose, onCreate }) => {
   const [description, setDescription] = useState('');
   const [title, setTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,7 +22,7 @@ const CreatePlanDialog = ({ isOpen, onClose, onCreate }) => {
   };
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title='Create New Study Plan'>
+    <Dialog isOpen={isOpen} onClose={onClose} title={'Create New Study Plan'}>
       <div className='space-y-6'>
         <div className='space-y-2'>
           <label
@@ -41,14 +41,13 @@ const CreatePlanDialog = ({ isOpen, onClose, onCreate }) => {
                 clipRule='evenodd'
               />
             </svg>
-            Plan Title <span className='text-red-500 ml-1'>*</span>
+            Title <span className='text-red-500 ml-1'>*</span>
           </label>
           <input
             id='plan-title'
             type='text'
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder='Enter a title for your study plan'
             className='w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200'
           />
           <p className='text-xs text-gray-500 mt-1 ml-1'>
@@ -151,7 +150,7 @@ const CreatePlanDialog = ({ isOpen, onClose, onCreate }) => {
                     clipRule='evenodd'
                   />
                 </svg>
-                Create Plan
+                {label || 'Create Plan'}
               </>
             )}
           </Button>

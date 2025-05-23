@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export const getComments = (planId) => {
   const comments = localStorage.getItem(`comments_${planId}`) || '[]';
   return JSON.parse(comments);
@@ -7,7 +9,7 @@ export const addComment = async (planId, comment) => {
   // Ensure the comment has an ID
   const commentWithId = {
     ...comment,
-    id: Date.now(),
+    id: uuidv4(),
     isApplied: false,
   };
 

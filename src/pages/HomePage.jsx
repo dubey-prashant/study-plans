@@ -1,24 +1,26 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PlanList from '../components/home/PlanList';
 import CreatePlanDialog from '../components/home/CreatePlanDialog';
-import { usePlans } from '../hooks/usePlans';
+import { usePlans } from '../hooks/usePlan';
 import Loader from '../components/common/Loader';
+import { createPlan } from '../services/plan.service';
 
 const HomePage = () => {
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const { plans, loading, addPlan } = usePlans();
+  const { plans, loading } = usePlans();
   const navigate = useNavigate();
 
   const handleCreate = async (title, planDescription) => {
     try {
-      const newPlanId = await addPlan(title, planDescription);
+      const newPlan = await createPlan({
+        title,
+        description: planDescription,
+      });
       setDialogOpen(false);
-      // Navigate to the newly created plan
-      navigate(`/plan/${newPlanId}`);
+      navigate(`/plan/${newPlan.id}`);
     } catch (error) {
       console.error('Error creating plan:', error);
-      // Handle error (could show an error message to the user)
     }
   };
 
@@ -30,11 +32,10 @@ const HomePage = () => {
           <div className='flex flex-col md:flex-row justify-between items-center'>
             <div className='mb-6 md:mb-0'>
               <h1 className='text-4xl md:text-5xl font-bold mb-2'>
-                Study Plans
+                Religaire AI
               </h1>
               <p className='text-blue-100 text-lg max-w-lg'>
-                Create, manage, and track your personalized learning journeys
-                all in one place.
+                Religaire Bio's AI powered IND preparation platform
               </p>
             </div>
             <button

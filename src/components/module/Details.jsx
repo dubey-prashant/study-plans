@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -9,7 +9,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import Button from '../common/Button';
 import html2pdf from 'html2pdf.js';
 
-const PlanDetails = ({ plan, onUpdatePlan }) => {
+const Details = ({ data, onChange }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Initialize Tiptap editor with table extensions
@@ -26,16 +26,16 @@ const PlanDetails = ({ plan, onUpdatePlan }) => {
       TableCell,
       TableHeader,
     ],
-    content: plan.description,
+    content: data.description,
     editable: isEditing,
   });
 
   // Update editor content when plan changes
   useEffect(() => {
-    if (editor && plan.description) {
-      editor.commands.setContent(plan.description);
+    if (editor && data.description) {
+      editor.commands.setContent(data.description);
     }
-  }, [plan.description, editor]);
+  }, [data.description, editor]);
 
   // Update editor editable state when editing mode changes
   useEffect(() => {
@@ -51,17 +51,17 @@ const PlanDetails = ({ plan, onUpdatePlan }) => {
     const content = editor.getHTML();
 
     const updatedPlan = {
-      ...plan,
+      ...data,
       description: content,
     };
 
-    await onUpdatePlan(updatedPlan);
+    await onChange(updatedPlan);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     if (editor) {
-      editor.commands.setContent(plan.description);
+      editor.commands.setContent(data.description);
     }
     setIsEditing(false);
   };
@@ -85,10 +85,10 @@ const PlanDetails = ({ plan, onUpdatePlan }) => {
     </head>
     <body>
       <div class="pdf-container">
-        <h1 class="text-2xl font-bold text-blue-600">${plan.title}</h1>
+        <h1 class="text-2xl font-bold text-blue-600">${data.title}</h1>
         
         <div class="mt-4 prose prose-sm max-w-none">
-          ${plan.description}
+          ${data.description}
         </div>
         
         <div class="mt-8 pt-4 border-t border-gray-200">
@@ -96,13 +96,13 @@ const PlanDetails = ({ plan, onUpdatePlan }) => {
             <p class="mb-1">
               <span class="font-medium">Status:</span>
               <span class="status-badge ml-2">
-                ${plan.status || 'In Progress'}
+                ${data.status || 'In Progress'}
               </span>
             </p>
             <p>
               <span class="font-medium">Created:</span>
               <span class="ml-1">
-                ${new Date(plan.createdAt).toLocaleDateString()}
+                ${new Date(data.createdAt).toLocaleDateString()}
               </span>
             </p>
           </div>
@@ -118,7 +118,7 @@ const PlanDetails = ({ plan, onUpdatePlan }) => {
     // Configure PDF options
     const options = {
       margin: [10, 10, 10, 10],
-      filename: `${plan.title.replace(/\s+/g, '-').toLowerCase()}.pdf`,
+      filename: `${data.title.replace(/\s+/g, '-').toLowerCase()}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -405,13 +405,13 @@ const PlanDetails = ({ plan, onUpdatePlan }) => {
           <p className='text-sm text-gray-500 mb-1'>
             <span className='font-medium'>Status:</span>
             <span className='ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs'>
-              {plan.status || 'In Progress'}
+              {data.status || 'In Progress'}
             </span>
           </p>
           <p className='text-sm text-gray-500'>
             <span className='font-medium'>Created:</span>
             <span className='ml-2'>
-              {new Date(plan.createdAt).toLocaleDateString()}
+              {new Date(data.createdAt).toLocaleDateString()}
             </span>
           </p>
         </div>
@@ -420,4 +420,4 @@ const PlanDetails = ({ plan, onUpdatePlan }) => {
   );
 };
 
-export default PlanDetails;
+export default Details;

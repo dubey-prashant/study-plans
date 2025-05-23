@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../common/Button';
-import { getComments, addComment } from '../../services/commentService';
+import { getComments, addComment } from '../../services/comment.service';
 
 const CommentSection = ({
   planId,
