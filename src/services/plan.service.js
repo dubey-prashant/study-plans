@@ -147,11 +147,12 @@ export const deleteGLP = async (planId) => {
 export const validateGLP = async (planId) => {
   try {
     // Find the plan to validate
-    const { GLPModule } = await getPlanById(planId);
+    const exPlan = await getPlanById(planId);
+    const GLPModule = exPlan.GLPModule;
 
     if (!GLPModule) {
       console.error('Plan not found for validation');
-      return null;
+      return exPlan;
     }
 
     const validationPrompt = `
@@ -198,7 +199,7 @@ export const validateGLP = async (planId) => {
     return newPlan;
   } catch (err) {
     console.error('Error validating plan:', err);
-    return null;
+    return getPlanById(planId);
   }
 };
 
@@ -275,11 +276,12 @@ export const deleteCMC = async (planId) => {
 export const validateCMC = async (planId) => {
   try {
     // Find the plan to validate
-    const { CMCModule } = await getPlanById(planId);
+    const plan = await getPlanById(planId);
+    const { CMCModule } = plan;
 
     if (!CMCModule) {
       console.error('CMC Module not found for validation');
-      return null;
+      return plan; // Return existing plan instead of null
     }
 
     const validationPrompt = `
@@ -331,53 +333,12 @@ export const validateCMC = async (planId) => {
     return newPlan;
   } catch (err) {
     console.error('Error validating CMC Module:', err);
-    return null;
+    // Return the original plan instead of null
+    return getPlanById(planId);
   }
 };
 
-// Create, update, and validate functions for IND Application
-// export const createIND = async (planId, { title, description }) => {
-//   try {
-//     const prompt = `Create a comprehensive Investigational New Drug (IND) application based on the following requirements:
-
-//     ${description}
-
-//     Include all key sections required by FDA for an IND submission:
-//     1. Cover letter and Form FDA 1571
-//     2. Table of contents
-//     3. Introductory statement and general investigational plan
-//     4. Investigator's brochure
-//     5. Clinical protocol(s)
-//     6. Chemistry, manufacturing, and control information
-//     7. Pharmacology and toxicology information
-//     8. Previous human experience
-//     9. Additional information
-
-//     Format the response in HTML for direct display in a web application.`;
-
-//     const resp = await generateINDResponse(prompt);
-//     const newDesc = resp.replace(/^```html\s*/g, '').replace(/```$/g, '');
-//     console.log('Generated IND Application:', resp);
-
-//     const newPlan = await updatePlan(planId, {
-//       INDApplication: {
-//         id: uuidv4(),
-//         title,
-//         description: newDesc,
-//         createdAt: new Date().toISOString(),
-//         updatedAt: new Date().toISOString(),
-//       },
-//     });
-
-//     return newPlan;
-//   } catch (error) {
-//     console.error('Error creating IND Application:', error);
-//     throw new Error('Failed to create IND Application');
-//   }
-// };
-
-// filepath: /Users/prashantdubey/vadelabs/religaire-ai/src/services/plan.service.js
-
+// IND Application functions
 export const createIND = async (
   planId,
   { title, description, glpModuleId, cmcModuleId }
@@ -498,11 +459,12 @@ export const deleteIND = async (planId) => {
 export const validateIND = async (planId) => {
   try {
     // Find the plan to validate
-    const { INDApplication } = await getPlanById(planId);
+    const plan = await getPlanById(planId);
+    const { INDApplication } = plan;
 
     if (!INDApplication) {
       console.error('IND Application not found for validation');
-      return null;
+      return plan; // Return existing plan instead of null
     }
 
     const validationPrompt = `
@@ -554,6 +516,7 @@ export const validateIND = async (planId) => {
     return newPlan;
   } catch (err) {
     console.error('Error validating IND Application:', err);
-    return null;
+    // Return the original plan instead of null
+    return getPlanById(planId);
   }
 };

@@ -6,7 +6,6 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [tailwindcss(), react()],
   server: {
-    host: '0.0.0.0', // Allows access from any device on the network
-    port: 5173, // Default Vite port, change if needed
+    // allowedHosts: ['aaa6-150-242-197-234.ngrok-free.app'], // Add your Ngrok domain here
   },
 });
