@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PlanList from '../components/home/PlanList';
+import ProjectList from '../components/home/ProjectList'; // Updated import name
 import CreatePlanDialog from '../components/home/CreatePlanDialog';
 import { usePlans } from '../hooks/usePlan';
 import Loader from '../components/common/Loader';
@@ -11,16 +11,16 @@ const HomePage = () => {
   const { plans, loading } = usePlans();
   const navigate = useNavigate();
 
-  const handleCreate = async (title, planDescription) => {
+  const handleCreate = async (title, projectDescription) => {
     try {
-      const newPlan = await createPlan({
+      const newProject = await createPlan({
         title,
-        description: planDescription,
+        description: projectDescription,
       });
       setDialogOpen(false);
-      navigate(`/plan/${newPlan.id}`);
+      navigate(`/project/${newProject.id}`);
     } catch (error) {
-      console.error('Error creating plan:', error);
+      console.error('Error creating project:', error);
     }
   };
 
@@ -54,7 +54,7 @@ const HomePage = () => {
                   clipRule='evenodd'
                 />
               </svg>
-              Create New Plan
+              Create New Project
             </button>
           </div>
         </div>
@@ -79,25 +79,25 @@ const HomePage = () => {
                     strokeLinecap='round'
                     strokeLinejoin='round'
                     strokeWidth={1.5}
-                    d='M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'
+                    d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
                   />
                 </svg>
                 <h2 className='text-2xl font-semibold text-gray-700 mb-2'>
-                  No study plans yet
+                  No IND Projects Yet
                 </h2>
                 <p className='text-gray-500 mb-6 max-w-md mx-auto'>
-                  Create your first study plan to get started on your learning
-                  journey
+                  Create your first IND project to begin the regulatory
+                  submission process
                 </p>
                 <button
                   onClick={() => setDialogOpen(true)}
                   className='bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow transition-colors duration-200'
                 >
-                  Create Your First Plan
+                  Create Your First Project
                 </button>
               </div>
             ) : (
-              <PlanList plans={plans} />
+              <ProjectList projects={plans} />
             )}
           </div>
         )}
