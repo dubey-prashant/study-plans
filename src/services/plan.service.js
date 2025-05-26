@@ -344,7 +344,6 @@ export const createIND = async (
   { title, description, glpModuleId, cmcModuleId }
 ) => {
   try {
-    // Get the plan to access GLP and CMC modules
     const plan = await getPlanById(planId);
 
     if (!plan.GLPModule || !plan.CMCModule) {
@@ -353,19 +352,14 @@ export const createIND = async (
       );
     }
 
-    // Extract text content from HTML to reduce token count
     const extractTextFromHtml = (html) => {
-      // Create a temporary DOM element
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
 
-      // Get text content (strips HTML tags)
       let textContent = tempDiv.textContent || tempDiv.innerText || '';
 
-      // Clean up the text (remove extra whitespace)
       textContent = textContent.replace(/\s+/g, ' ').trim();
 
-      // Further trim if it's still very long (focus on first portion which is often most important)
       if (textContent.length > 4000) {
         textContent =
           textContent.substring(0, 4000) +
@@ -464,7 +458,7 @@ export const validateIND = async (planId) => {
 
     if (!INDApplication) {
       console.error('IND Application not found for validation');
-      return plan; // Return existing plan instead of null
+      return plan;
     }
 
     const validationPrompt = `
@@ -516,7 +510,6 @@ export const validateIND = async (planId) => {
     return newPlan;
   } catch (err) {
     console.error('Error validating IND Application:', err);
-    // Return the original plan instead of null
     return getPlanById(planId);
   }
 };
