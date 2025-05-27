@@ -143,7 +143,7 @@ const GLPModule = ({ plan, setPlan }) => {
   }
 
   return (
-    <div className='max-w-4xl mx-auto px-4 '>
+    <div className='max-w-4xl mx-auto md:px-4 '>
       {isValidating && (
         <div className='mb-6 bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-md flex items-center'>
           <svg
