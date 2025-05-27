@@ -7,7 +7,7 @@ import CMCModule from './plan/CMC';
 import INDApplication from './plan/IND';
 
 // Main Plan Component
-const Plan = () => {
+const Project = () => {
   const { id } = useParams();
   const { plan, isLoading, setPlan } = usePlan(id);
   const [activeModule, setActiveModule] = useState('glp');
@@ -191,4 +191,4 @@ const Plan = () => {
   );
 };
 
-export default Plan;
+export default Project;
