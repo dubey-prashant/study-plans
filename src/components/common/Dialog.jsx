@@ -33,26 +33,25 @@ const Dialog = ({ isOpen, onClose, title, children }) => {
   return (
     <div
       className='fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-all duration-300'
-      // onClick={(e) => {
-      //   // Close when clicking outside the dialog
-      //   // if (e.target === e.currentTarget) onClose();
-      // }}
       role='dialog'
       aria-modal='true'
       aria-labelledby='dialog-title'
     >
       <div
-        className='bg-white rounded-lg shadow-2xl w-full max-w-md animate-fadeIn'
+        className='bg-white rounded-lg shadow-2xl w-full max-w-md sm:max-w-lg animate-fadeIn max-h-[90vh] flex flex-col'
         ref={dialogRef}
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className='p-5 border-b border-gray-200 flex justify-between items-center relative'>
-          <h2 id='dialog-title' className='text-xl font-semibold text-gray-800'>
+        <div className='p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center relative flex-shrink-0'>
+          <h2
+            id='dialog-title'
+            className='text-lg sm:text-xl font-semibold text-gray-800 pr-8'
+          >
             {title}
           </h2>
           <button
-            className='absolute top-5 right-5 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-1 transition-colors duration-200'
+            className='absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-1 transition-colors duration-200'
             onClick={onClose}
             aria-label='Close dialog'
           >
@@ -72,7 +71,7 @@ const Dialog = ({ isOpen, onClose, title, children }) => {
             </svg>
           </button>
         </div>
-        <div className='p-6 max-h-[70vh] overflow-y-auto'>{children}</div>
+        <div className='p-4 sm:p-6 overflow-y-auto flex-1'>{children}</div>
       </div>
     </div>
   );

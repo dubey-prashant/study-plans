@@ -219,29 +219,6 @@ const CommentSection = ({
           </div>
         )}
       </div>
-      <style jsx>{`
-        .comment-wrapper ul {
-          list-style-type: disc;
-          padding-left: 1.5rem;
-          margin: 0.75rem 0;
-        }
-        .comment-wrapper ol {
-          list-style-type: decimal;
-          padding-left: 1.5rem;
-          margin: 0.75rem 0;
-        }
-        .comment-wrapper li {
-          margin-bottom: 0.5rem;
-        }
-        .comment-wrapper h3,
-        .comment-wrapper h4 {
-          font-weight: 600;
-          margin: 1rem 0 0.5rem 0;
-        }
-        .comment-wrapper p {
-          margin-bottom: 0.75rem;
-        }
-      `}</style>
     </div>
   );
 };

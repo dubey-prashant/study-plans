@@ -79,15 +79,17 @@ const ProjectListItem = ({ project }) => {
 const ProjectList = ({ projects, onEdit }) => {
   return (
     <div className='space-y-6'>
-      <div className='flex justify-between items-center mb-6'>
-        <h2 className='text-2xl font-bold text-gray-800'>Your Projects</h2>
+      <div className='flex justify-between items-center mb-8'>
+        <h2 className='text-2xl sm:text-3xl font-bold text-gray-800'>
+          Your Projects
+        </h2>
       </div>
 
       {projects.length === 0 ? (
-        <div className='text-center py-10 bg-gray-50 rounded-lg border border-gray-200'>
+        <div className='text-center py-12 sm:py-16 bg-gray-50 rounded-lg border border-gray-200'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
-            className='h-12 w-12 mx-auto text-gray-400 mb-3'
+            className='h-12 w-12 sm:h-16 sm:w-16 mx-auto text-gray-400 mb-4'
             fill='none'
             viewBox='0 0 24 24'
             stroke='currentColor'
@@ -104,11 +106,13 @@ const ProjectList = ({ projects, onEdit }) => {
           </p>
         </div>
       ) : (
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6'>
           {projects.map((project) => (
-            <li key={project.id} className='list-none'>
-              <ProjectListItem project={project} onEdit={onEdit} />
-            </li>
+            <ProjectListItem
+              key={project.id}
+              project={project}
+              onEdit={onEdit}
+            />
           ))}
         </div>
       )}

@@ -55,65 +55,88 @@ const Project = () => {
   const isActive = (module) => activeModule === module;
 
   return (
-    <div className='bg-gray-50 min-h-screen'>
-      {plan && (
-        <div className='max-w-7xl mx-auto px-4 pt-4 sm:pt-8'>
-          {/* Top navigation bar with back button and title */}
-          <div className='flex items-center justify-between mb-4 sm:mb-8'>
-            <div className='flex items-center'>
+    <div className='min-h-screen bg-gray-50'>
+      {/* Header */}
+      <div className='bg-white shadow-sm border-b border-gray-200'>
+        <div className='px-4 sm:px-6 lg:px-8'>
+          <div className='flex justify-between items-center h-16'>
+            <div className='flex items-center min-w-0 flex-1'>
               <Link
                 to='/'
-                className='mr-3 p-2 rounded-md hover:bg-gray-200 transition-colors duration-200'
+                className='flex-shrink-0 flex items-center text-blue-600 hover:text-blue-700 transition-colors mr-3 sm:mr-4'
               >
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
-                  className='h-5 w-5 text-gray-600'
-                  viewBox='0 0 20 20'
-                  fill='currentColor'
+                  className='h-6 w-6 mr-2'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
                 >
                   <path
-                    fillRule='evenodd'
-                    d='M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z'
-                    clipRule='evenodd'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M10 19l-7-7m0 0l7-7m-7 7h18'
                   />
                 </svg>
+                <span className='font-semibold text-lg hidden sm:block'>
+                  Religaire AI
+                </span>
               </Link>
-              <h1 className='text-xl sm:text-3xl font-bold text-gray-800 truncate max-w-[calc(100vw-100px)]'>
-                {plan.title}
-              </h1>
+              <div className='min-w-0 flex-1'>
+                <h1
+                  className='text-sm sm:text-lg lg:text-xl font-semibold text-gray-900 truncate'
+                  title={plan.title}
+                >
+                  {plan.title}
+                </h1>
+              </div>
             </div>
 
-            {/* Mobile menu toggle button */}
+            {/* Mobile menu button */}
             <button
-              className='md:hidden p-2 bg-white rounded-md shadow-sm border border-gray-200'
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className='md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ml-3'
             >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                className='h-5 w-5 text-gray-600'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                {isMobileMenuOpen ? (
+              <span className='sr-only'>Open main menu</span>
+              {isMobileMenuOpen ? (
+                <svg
+                  className='block h-6 w-6'
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                >
                   <path
                     strokeLinecap='round'
                     strokeLinejoin='round'
                     strokeWidth={2}
                     d='M6 18L18 6M6 6l12 12'
                   />
-                ) : (
+                </svg>
+              ) : (
+                <svg
+                  className='block h-6 w-6'
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                >
                   <path
                     strokeLinecap='round'
                     strokeLinejoin='round'
                     strokeWidth={2}
                     d='M4 6h16M4 12h16M4 18h16'
                   />
-                )}
-              </svg>
+                </svg>
+              )}
             </button>
           </div>
+        </div>
+      </div>
 
+      {plan && (
+        <div className='max-w-7xl mx-auto px-4 pt-4 sm:pt-8'>
           <div className='flex flex-col md:flex-row gap-4 md:gap-6'>
             {/* Sidebar - visible on mobile only when menu is open */}
             <div
@@ -122,7 +145,7 @@ const Project = () => {
               } md:block md:w-64 flex-shrink-0 transition-all duration-300 ease-in-out`}
             >
               <div className='bg-white rounded-lg shadow-md border border-gray-200 p-4'>
-                <h2 className='text-lg font-semibold mb-4 text-gray-800 border-b pb-2'>
+                <h2 className='text-lg font-semibold mb-4 text-gray-800 border-b pb-2 hidden md:block'>
                   Modules
                 </h2>
                 <nav>
@@ -210,26 +233,6 @@ const Project = () => {
                 </nav>
               </div>
             </div>
-
-            {/* Mobile module switcher - only visible when menu is closed */}
-            {/* {!isMobileMenuOpen && (
-              <div className='md:hidden bg-white rounded-lg shadow-md border border-gray-200 p-2 mb-4'>
-                <div className='flex justify-between items-center'>
-                  <span className='text-sm font-medium text-gray-600'>
-                    Current Module:
-                  </span>
-                  <select
-                    value={activeModule}
-                    onChange={(e) => setActiveModule(e.target.value)}
-                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2'
-                  >
-                    <option value='glp'>Pre-Clinical GLP</option>
-                    <option value='cmc'>CMC Module</option>
-                    <option value='ind'>IND Application</option>
-                  </select>
-                </div>
-              </div>
-            )} */}
 
             {/* Main content area */}
             <div className='flex-1 max-h-[calc(100vh-80px)] md:max-h-[calc(100vh-120px)] overflow-y-auto rounded-lg'>

@@ -48,7 +48,8 @@ const CreatePlanDialog = ({ label, isOpen, onClose, onCreate }) => {
             type='text'
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className='w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200'
+            className='w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-base'
+            placeholder='Enter project title...'
           />
           <p className='text-xs text-gray-500 mt-1 ml-1'>
             Choose a clear, specific title for your study plan
@@ -58,7 +59,7 @@ const CreatePlanDialog = ({ label, isOpen, onClose, onCreate }) => {
         <div className='space-y-2'>
           <label
             htmlFor='plan-description'
-            className='  text-sm font-medium text-gray-700 flex items-center'
+            className='text-sm font-medium text-gray-700 flex items-center'
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -78,9 +79,9 @@ const CreatePlanDialog = ({ label, isOpen, onClose, onCreate }) => {
             id='plan-description'
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder=' '
+            placeholder='Describe your project objectives, target indication, and key considerations...'
             rows='6'
-            className='w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200'
+            className='w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-base resize-none'
           />
           <p className='text-xs text-gray-500 mt-1 ml-1'>
             The more detailed your description, the better your study plan will
@@ -88,10 +89,10 @@ const CreatePlanDialog = ({ label, isOpen, onClose, onCreate }) => {
           </p>
         </div>
 
-        <div className='flex justify-end space-x-3 pt-2'>
+        <div className='flex flex-col sm:flex-row justify-end gap-3 pt-2'>
           <Button
             onClick={onClose}
-            className='bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-5 py-2.5 rounded-md transition-colors duration-200 flex items-center'
+            className='sm:order-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-5 py-3 rounded-md transition-colors duration-200 flex items-center justify-center'
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -109,7 +110,7 @@ const CreatePlanDialog = ({ label, isOpen, onClose, onCreate }) => {
           </Button>
           <Button
             onClick={handleCreate}
-            className='bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-md shadow-sm transition-colors duration-200 flex items-center'
+            className='sm:order-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-3 rounded-md shadow-sm transition-colors duration-200 flex items-center justify-center min-h-[44px]'
             disabled={!title || !description || isSubmitting}
           >
             {isSubmitting ? (

@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { getGLPSystemPrompt } from '../utils/system.prompt';
+import {
+  getGLPSystemPrompt,
+  getCMCSystemPrompt,
+  getINDSystemPrompt,
+} from '../utils/system.prompt';
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent';
@@ -75,7 +79,7 @@ export const generateCMCResponse = async (prompt) => {
   const examples = await fetch('/examples.html').then((response) =>
     response.text()
   );
-  const systemPrompt = getGLPSystemPrompt('');
+  const systemPrompt = getCMCSystemPrompt(examples);
 
   try {
     const response = await axios.post(`${API_URL}?key=${API_KEY}`, {
@@ -108,10 +112,10 @@ export const generateCMCResponse = async (prompt) => {
 };
 
 export const generateINDResponse = async (prompt) => {
-  const examples = await fetch('/examples.html').then((response) =>
+  const examples = await fetch('/INDexamples.html').then((response) =>
     response.text()
   );
-  const systemPrompt = getGLPSystemPrompt('');
+  const systemPrompt = getINDSystemPrompt(examples);
 
   try {
     const response = await axios.post(`${API_URL}?key=${API_KEY}`, {

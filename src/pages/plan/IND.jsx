@@ -20,6 +20,17 @@ const INDApplication = ({ plan, setPlan }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState('');
+  const [generationProgress, setGenerationProgress] = useState({
+    active: false,
+    currentSection: '',
+    completedSections: 0,
+    totalSections: 9,
+  });
+  // New state for the current in-progress document
+  const [inProgressDocument, setInProgressDocument] = useState({
+    title: '',
+    description: '',
+  });
 
   const hasGLPModule = Boolean(plan.GLPModule);
   const hasCMCModule = Boolean(plan.CMCModule);
@@ -65,18 +76,19 @@ const INDApplication = ({ plan, setPlan }) => {
     try {
       const prompt = `Please update this IND Application based on the suggestion provided.
 
-      Current Application Description: ${plan.INDApplication.description}
+      Current Application Content: ${plan.INDApplication.content}
+      User Description: ${plan.INDApplication.description}
 
       Suggestion: ${suggestion}
 
-      Provide an improved version of the application description that incorporates the suggestion. Keep the response focused only on the improved content without any explanatory text.`;
+      Provide an improved version of the application content that incorporates the suggestion. Keep the response focused only on the improved content without any explanatory text.`;
 
-      const improvedDescription = await generateINDResponse(prompt);
+      const improvedContent = await generateINDResponse(prompt);
 
-      // Update the IND application with the improved description
+      // Update the IND application with the improved content
       const updatedPlan = await updateIND(plan.id, {
         ...plan.INDApplication,
-        description: improvedDescription
+        content: improvedContent
           .replace(/^```html\s*/g, '')
           .replace(/```$/g, ''),
       });
@@ -100,24 +112,508 @@ const INDApplication = ({ plan, setPlan }) => {
     }
   };
 
-  // Create a new IND application
-  const handleCreate = async () => {
+  // Create a new IND application with section-by-section generation
+  const handleCreate = async (title, description) => {
     try {
       setIsCreating(true);
+      setDialogOpen(false);
+      setGenerationProgress({
+        active: true,
+        currentSection: 'Preparing to generate IND Application',
+        completedSections: 0,
+        totalSections: 9,
+      });
 
+      // Initialize in-progress document
+      setInProgressDocument({
+        title: title || 'IND Application',
+        description: description || additionalInfo,
+        content: '<p>Generating content...</p>',
+      });
+
+      // Create initial IND application with user description
       const newPlan = await createIND(plan.id, {
-        title: 'IND Application',
-        description: additionalInfo,
+        title: title || 'IND Application',
+        description: description || additionalInfo,
         glpModuleId: plan.GLPModule.id,
         cmcModuleId: plan.CMCModule.id,
       });
 
-      console.log('New IND Application created:', newPlan);
-      setPlan(newPlan);
-      setDialogOpen(false);
+      // Define comprehensive IND sections with detailed prompts
+      const sections = [
+        {
+          name: '1. Cover Letter',
+          prompt: `Create a comprehensive Cover Letter section (Section 1) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should include:
+          - Professional letterhead and date
+          - Proper FDA office addressing (CDER or CBER as appropriate)
+          - Clear subject line with drug code and indication
+          - Introduction of the sponsor organization
+          - Brief description of the investigational drug and its mechanism of action
+          - Overview of the proposed clinical study program
+          - Statement of regulatory compliance commitment
+          - Primary contact information
+          - Professional closing with authorized signatory
+          
+          Additional Requirements: ${description || additionalInfo}
+          
+          Format as HTML with professional business letter structure following FDA submission guidelines.`,
+        },
+        {
+          name: '2. Form FDA 1571 Summary',
+          prompt: `Create a comprehensive Form FDA 1571 Summary section (Section 2) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should include detailed information from Form FDA 1571:
+          - Complete sponsor information (name, address, contact details)
+          - Drug identification (chemical name, code name, indication)
+          - Phase of clinical investigation
+          - Route of administration and dosage form
+          - Principal investigator details and qualifications
+          - Clinical study site information
+          - Regulatory history and prior submissions
+          - Manufacturing facility information
+          - Study protocol identification numbers
+          - Timeline for study initiation
+          
+          Include comprehensive tables with all required regulatory information.
+          Additional Requirements: ${description || additionalInfo}
+          
+          Format as HTML with structured tables and regulatory-compliant organization following FDA guidelines.`,
+        },
+        {
+          name: '3. Introductory Statement and General Investigational Plan',
+          prompt: `Create a comprehensive Introductory Statement and General Investigational Plan section (Section 3) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should include:
+          
+          3.1 Drug Product Overview:
+          - Detailed description of the investigational product
+          - Chemical structure and molecular characteristics
+          - Therapeutic class and mechanism of action
+          - Proposed indication and target patient population
+          - Rationale for development program
+          
+          3.2 Clinical Development Strategy:
+          - Overall development plan from Phase 1 through registration
+          - Study objectives and endpoints for each phase
+          - Patient population and inclusion/exclusion criteria
+          - Dosing strategy and administration schedule
+          - Expected timeline and milestones
+          
+          3.3 Scientific Rationale:
+          - Unmet medical need and market assessment
+          - Competitive landscape analysis
+          - Differentiation from existing therapies
+          - Regulatory pathway and approval strategy
+          
+          3.4 Risk-Benefit Assessment:
+          - Identified risks based on preclinical data
+          - Risk mitigation strategies and monitoring plans
+          - Potential benefits for target patient population
+          - Overall benefit-risk justification for human studies
+          
+          Additional Requirements: ${description || additionalInfo}
+          
+          Format as HTML with comprehensive sections and regulatory structure following FDA guidelines.`,
+        },
+        {
+          name: "4. Investigator's Brochure",
+          prompt: `Create a comprehensive Investigator's Brochure section (Section 4) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should include detailed information per ICH E6 guidelines:
+          
+          4.1 Chemical and Physical Properties:
+          - Complete chemical characterization (name, formula, structure)
+          - Physical properties (molecular weight, solubility, stability)
+          - Analytical methods for identification and quantification
+          - Formulation details and excipient information
+          - Storage and handling requirements
+          
+          4.2 Pharmacology Summary:
+          - Primary pharmacodynamics and mechanism of action
+          - Secondary pharmacology and off-target effects
+          - Pharmacokinetic profile across species
+          - ADME characteristics and metabolic pathways
+          - Drug-drug interaction potential
+          - Dose-response relationships
+          
+          4.3 Toxicology Summary:
+          - Single and repeat-dose toxicity findings
+          - Target organs and dose-limiting toxicities
+          - NOAEL determinations and safety margins
+          - Genotoxicity and carcinogenicity assessment
+          - Reproductive and developmental toxicity
+          - Safety pharmacology findings
+          
+          4.4 Clinical Starting Dose Justification:
+          - NOAEL-based calculations with safety factors
+          - Allometric scaling considerations
+          - Comparable human dose estimations
+          - Starting dose rationale and dose escalation plan
+          
+          4.5 Risk Assessment and Monitoring:
+          - Identified risks and their clinical relevance
+          - Monitoring parameters and frequency
+          - Dose modification guidelines
+          - Contraindications and warnings
+          
+          Additional Requirements: ${description || additionalInfo}
+          
+          Include comprehensive data tables and detailed safety assessments.
+          Format as HTML with professional structure following ICH E6 and FDA guidelines.`,
+        },
+        {
+          name: '5. Clinical Protocol(s)',
+          prompt: `Create a comprehensive Clinical Protocol(s) section (Section 5) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should include detailed protocol information:
+          
+          5.1 Protocol Synopsis:
+          - Study title and protocol identification
+          - Phase of development and study design
+          - Primary and secondary objectives
+          - Study population and sample size
+          - Treatment arms and randomization scheme
+          - Study duration and follow-up period
+          
+          5.2 Study Design and Methodology:
+          - Detailed study design (randomized, blinded, controlled)
+          - Patient selection criteria (inclusion/exclusion)
+          - Dose escalation schema (if applicable)
+          - Treatment schedule and administration details
+          - Efficacy and safety assessments
+          - Statistical analysis plan overview
+          
+          5.3 Safety Monitoring:
+          - Adverse event reporting procedures
+          - Dose-limiting toxicity definitions
+          - Safety review committee structure
+          - Stopping rules and dose modification guidelines
+          - Emergency procedures and contact information
+          
+          5.4 Efficacy Assessments:
+          - Primary and secondary endpoint definitions
+          - Assessment schedules and methodologies
+          - Response criteria and evaluation standards
+          - Biomarker and pharmacokinetic sampling
+          
+          5.5 Regulatory Compliance:
+          - Good Clinical Practice adherence
+          - Institutional Review Board approval
+          - Informed consent procedures
+          - Data management and quality assurance
+          - Regulatory reporting requirements
+          
+          Additional Requirements: ${description || additionalInfo}
+          
+          Format as HTML with detailed protocol structure following ICH GCP and FDA guidelines.`,
+        },
+        {
+          name: '6. Chemistry, Manufacturing, and Controls (CMC)',
+          prompt: `Create a comprehensive Chemistry, Manufacturing, and Controls (CMC) section (Section 6) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should integrate CMC information from the existing CMC module and include:
+          
+          6.1 Drug Substance Information:
+          - Complete chemical characterization and nomenclature
+          - Manufacturing process and synthetic route
+          - Specifications and analytical methods
+          - Stability data and storage conditions
+          - Impurity profile and control strategy
+          - Manufacturing facility information and GMP compliance
+          
+          6.2 Drug Product Information:
+          - Formulation composition and rationale
+          - Manufacturing process description
+          - Container-closure system
+          - Product specifications and testing methods
+          - Stability studies and shelf-life determination
+          - Quality control procedures
+          
+          6.3 Analytical Methods:
+          - Method development and validation
+          - Identity, assay, and purity testing
+          - Impurity identification and quantification
+          - Dissolution and bioavailability testing
+          - Microbiological testing (if applicable)
+          - Reference standards and certificates
+          
+          6.4 Quality Assurance:
+          - Good Manufacturing Practice compliance
+          - Quality control laboratory qualifications
+          - Change control procedures
+          - Batch records and documentation
+          - Supply chain management
+          - Deviation and investigation procedures
+          
+          Based on CMC Module: ${
+            plan.CMCModule?.content ||
+            plan.CMCModule?.description ||
+            'Standard CMC requirements'
+          }
+          Additional Requirements: ${description || additionalInfo}
+          
+          Format as HTML with comprehensive tables and regulatory structure following FDA CMC guidelines.`,
+        },
+        {
+          name: '7. Pharmacology and Toxicology Information',
+          prompt: `Create a comprehensive Pharmacology and Toxicology Information section (Section 7) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should integrate findings from the GLP module and include:
+          
+          7.1 Pharmacodynamics:
+          - Primary mechanism of action and target engagement
+          - Dose-response relationships and potency
+          - Duration of action and reversibility
+          - Secondary pharmacology and off-target effects
+          - Species comparison and human relevance
+          - Biomarker and pharmacodynamic endpoints
+          
+          7.2 Pharmacokinetics and ADME:
+          - Absorption characteristics and bioavailability
+          - Distribution pattern and tissue penetration
+          - Metabolism and metabolite identification
+          - Excretion pathways and elimination kinetics
+          - Species scaling and human dose predictions
+          - Drug-drug interaction potential
+          
+          7.3 Toxicology Studies:
+          - Single-dose toxicity studies with LD50 determinations
+          - Repeat-dose toxicity with NOAEL and target organs
+          - Dose-limiting toxicities and reversibility
+          - Safety margins based on exposure comparisons
+          - Species differences and human relevance
+          - Recovery and reversibility assessments
+          
+          7.4 Specialized Toxicology:
+          - Genotoxicity battery (Ames, chromosomal aberration, micronucleus)
+          - Carcinogenicity assessment and weight of evidence
+          - Reproductive and developmental toxicity studies
+          - Immunotoxicity evaluation (if applicable)
+          - Phototoxicity and other specialized studies
+          
+          7.5 Safety Pharmacology:
+          - Central nervous system effects
+          - Cardiovascular safety (including hERG assessment)
+          - Respiratory function evaluation
+          - Additional organ systems as appropriate
+          
+          Based on GLP Module: ${
+            plan.GLPModule?.content ||
+            plan.GLPModule?.description ||
+            'Standard GLP study results'
+          }
+          Additional Requirements: ${description || additionalInfo}
+          
+          Include comprehensive safety assessment and human risk evaluation.
+          Format as HTML with detailed data tables and regulatory structure following FDA guidelines.`,
+        },
+        {
+          name: '8. Previous Human Experience',
+          prompt: `Create a comprehensive Previous Human Experience section (Section 8) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should include:
+          
+          8.1 Clinical Experience Summary:
+          - Previous clinical studies with the investigational product
+          - Doses tested and patient populations studied
+          - Safety findings and adverse event profiles
+          - Efficacy signals and biomarker data
+          - Regulatory approvals in other jurisdictions
+          
+          8.2 Related Compound Experience:
+          - Clinical experience with compounds in the same class
+          - Mechanism-based safety considerations
+          - Established adverse event patterns
+          - Drug-drug interactions and contraindications
+          - Risk mitigation strategies from class experience
+          
+          8.3 Published Literature:
+          - Relevant scientific publications and case reports
+          - Post-marketing surveillance data
+          - Epidemiological studies and real-world evidence
+          - Meta-analyses and systematic reviews
+          - Expert opinion and clinical guidelines
+          
+          8.4 Risk Assessment:
+          - Known and potential risks based on available data
+          - Risk characterization and clinical significance
+          - Monitoring strategies and risk mitigation plans
+          - Patient selection criteria to minimize risks
+          - Benefit-risk assessment for the proposed indication
+          
+          8.5 Regulatory History:
+          - Previous regulatory interactions and submissions
+          - Regulatory advice and guidance received
+          - International regulatory status and approvals
+          - Special designations (breakthrough, fast track, etc.)
+          - Post-marketing commitments and requirements
+          
+          Additional Requirements: ${description || additionalInfo}
+          
+          If no previous human experience exists, provide detailed justification based on preclinical data and related compound experience.
+          Format as HTML with comprehensive assessment following FDA guidelines.`,
+        },
+        {
+          name: '9. Additional Information',
+          prompt: `Create a comprehensive Additional Information section (Section 9) for an IND Application following FDA format requirements for ${
+            title || 'a drug development program'
+          }.
+          
+          This section should include all supplementary regulatory information:
+          
+          9.1 Environmental Assessment:
+          - Environmental impact evaluation per 21 CFR Part 25
+          - Categorical exclusion justification
+          - Environmental assessment documentation (if required)
+          - Waste disposal and environmental safety measures
+          
+          9.2 Pediatric Study Plans:
+          - Pediatric Research Equity Act (PREA) compliance
+          - Justification for deferral or waiver requests
+          - Planned pediatric development strategy
+          - Age-appropriate formulation considerations
+          - Pediatric safety and dosing considerations
+          
+          9.3 Special Populations:
+          - Hepatic and renal impairment considerations
+          - Geriatric population safety and dosing
+          - Pregnancy and lactation safety information
+          - Ethnic and racial diversity considerations
+          - Genetic polymorphism implications
+          
+          9.4 Manufacturing and Quality:
+          - Good Manufacturing Practice compliance statements
+          - Quality agreements with contract manufacturers
+          - Supply chain management and contingency plans
+          - Batch release procedures and specifications
+          - Post-market surveillance and quality monitoring
+          
+          9.5 Regulatory Compliance:
+          - Good Clinical Practice adherence
+          - Institutional Review Board processes
+          - Informed consent procedures and forms
+          - Data integrity and electronic records compliance
+          - Pharmacovigilance and safety reporting procedures
+          
+          9.6 Risk Management:
+          - Risk Evaluation and Mitigation Strategy (REMS) assessment
+          - Risk minimization measures and monitoring
+          - Healthcare provider and patient education materials
+          - Distribution restrictions and access controls
+          - Post-marketing safety studies (if applicable)
+          
+          9.7 International Considerations:
+          - Global development strategy and regulatory alignment
+          - International Conference on Harmonisation (ICH) compliance
+          - Foreign regulatory submissions and approvals
+          - Cultural and regional considerations for clinical studies
+          - International pharmacovigilance coordination
+          
+          Additional Requirements: ${description || additionalInfo}
+          
+          Format as HTML with comprehensive regulatory documentation following FDA guidelines.`,
+        },
+      ];
+
+      let combinedContent = '';
+
+      // Generate content section by section
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+
+        setGenerationProgress({
+          active: true,
+          currentSection: `Generating ${section.name}`,
+          completedSections: i,
+          totalSections: sections.length,
+        });
+
+        try {
+          const sectionContent = await generateINDResponse(section.prompt);
+
+          // Clean up the section content
+          const cleanedContent = sectionContent
+            .replace(/^```html\s*/g, '')
+            .replace(/```$/g, '')
+            .trim();
+
+          combinedContent += cleanedContent + '\n\n';
+
+          // Update the in-progress document with current content
+          setInProgressDocument({
+            title: title || 'IND Application',
+            description: description || additionalInfo,
+            content: combinedContent,
+          });
+
+          // Update the plan with current progress
+          await updateIND(newPlan.id, {
+            ...newPlan.INDApplication,
+            content: combinedContent,
+          });
+
+          setGenerationProgress({
+            active: true,
+            currentSection: `Completed ${section.name}`,
+            completedSections: i + 1,
+            totalSections: sections.length,
+          });
+
+          // Small delay between sections to prevent rate limiting
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } catch (error) {
+          console.error(`Error generating section ${section.name}:`, error);
+          // Continue with next section even if one fails
+          combinedContent += `<h2>${section.name}</h2><p>Error generating this section. Please try regenerating.</p>\n\n`;
+        }
+      }
+
+      // Final update with complete content
+      const finalPlan = await updateIND(newPlan.id, {
+        ...newPlan.INDApplication,
+        content: combinedContent,
+      });
+
+      console.log(
+        'New IND Application created with section-by-section generation:',
+        finalPlan
+      );
+      setPlan(finalPlan);
+
+      setGenerationProgress({
+        active: false,
+        currentSection: 'Generation completed',
+        completedSections: sections.length,
+        totalSections: sections.length,
+      });
+
       setAdditionalInfo('');
     } catch (error) {
       console.error('Error creating IND Application:', error);
+      setGenerationProgress({
+        active: false,
+        currentSection: 'Generation failed',
+        completedSections: 0,
+        totalSections: 9,
+      });
     } finally {
       setIsCreating(false);
     }
@@ -136,6 +632,58 @@ const INDApplication = ({ plan, setPlan }) => {
       setIsDeleting(false);
     }
   };
+
+  // Show generation progress when creating
+  if (generationProgress.active || isCreating) {
+    return (
+      <div className='bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6 w-full'>
+        <h2 className='text-2xl font-bold mb-4 text-gray-800'>
+          IND Application
+        </h2>
+        <div className='flex flex-col items-center justify-center py-8'>
+          <Loader />
+          <div className='mt-4 text-center'>
+            <p className='text-gray-600 mb-2'>
+              {generationProgress.currentSection}
+            </p>
+            <div className='w-full bg-gray-200 rounded-full h-2.5 mt-3'>
+              <div
+                className='bg-blue-600 h-2.5 rounded-full transition-all duration-300'
+                style={{
+                  width: `${
+                    (generationProgress.completedSections /
+                      generationProgress.totalSections) *
+                    100
+                  }%`,
+                }}
+              ></div>
+            </div>
+            <p className='text-sm text-gray-500 mt-2'>
+              Section {generationProgress.completedSections} of{' '}
+              {generationProgress.totalSections} completed
+            </p>
+          </div>
+        </div>
+
+        {/* Show in-progress content if available */}
+        {inProgressDocument.content &&
+          inProgressDocument.content !== '<p>Generating content...</p>' && (
+            <div className='mt-6'>
+              <h3 className='text-lg font-semibold mb-3'>
+                Generated Content (In Progress)
+              </h3>
+              <div className='bg-gray-50 border border-gray-200 rounded-md p-4 max-h-96 overflow-y-auto'>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: inProgressDocument.content,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+      </div>
+    );
+  }
 
   // Render when no IND application exists yet
   if (!plan.INDApplication) {
@@ -329,7 +877,7 @@ const INDApplication = ({ plan, setPlan }) => {
                 Cancel
               </button>
               <button
-                onClick={handleCreate}
+                onClick={() => handleCreate('IND Application', additionalInfo)}
                 className='bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-md shadow-sm transition-colors duration-200 flex items-center'
                 disabled={isCreating}
               >

@@ -108,23 +108,23 @@ export const deletePlan = async (planId) => {
 
 // GLP Module functions
 export const createGLP = async (planId, { title, description }) => {
-  const prompt = `${description}`;
-
-  const resp = await generateGLPResponse(prompt);
-  const newDesc = resp.replace(/^```html\s*/g, '').replace(/```$/g, '');
-  console.log('Generated GLP:', resp);
-
-  const newPlan = await updatePlan(planId, {
-    GLPModule: {
-      id: uuidv4(),
-      title,
-      description: newDesc,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  });
-
-  return newPlan;
+  try {
+    const plan = await updatePlan(planId, {
+      GLPModule: {
+        id: uuidv4(),
+        title,
+        description,
+        validatedByAI: false,
+        aiSuggestion: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    return plan;
+  } catch (error) {
+    console.error('Error creating GLP Module:', error);
+    throw new Error('Failed to create GLP Module');
+  }
 };
 
 export const updateGLP = async (planId, updatedData) => {

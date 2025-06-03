@@ -3,8 +3,9 @@
 
 .ProseMirror {
   min-height: 200px;
-  padding: 0.5rem;
+  padding: 0.75rem;
   outline: none;
+  line-height: 1.6;
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
@@ -17,4 +18,416 @@
 
 .ProseMirror:focus {
   outline: none;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Better mobile touch targets */
+@media (max-width: 640px) {
+  button,
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Better text handling for long titles */
+.break-words {
+  word-wrap: break-word;
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* Improved mobile title display */
+@media (max-width: 640px) {
+  .mobile-title {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    max-width: calc(100vw - 120px);
+  }
+}
+
+/* Better spacing for mobile headers */
+@media (max-width: 768px) {
+  .mobile-header {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .mobile-header h1 {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
+
+/* Prevent duplicate content display */
+.prose h1:first-child {
+  margin-top: 0;
+}
+
+/* Better mobile prose styling */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 0.875rem;
+  }
+
+  .prose h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose h2 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.comment-wrapper ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+}
+.comment-wrapper ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+}
+.comment-wrapper li {
+  margin-bottom: 0.5rem;
+}
+.comment-wrapper h3,
+.comment-wrapper h4 {
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+}
+.comment-wrapper p {
+  margin-bottom: 0.75rem;
+}
+
+/* Table Container for Overflow Handling */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* CMC Content Table Styling */
+.cmc-content table {
+  width: 100%;
+  min-width: 800px; /* Ensure minimum width for proper display */
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.cmc-content table thead th {
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-weight: 600;
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  vertical-align: top;
+}
+
+.cmc-content table thead th:last-child {
+  border-right: none;
+}
+
+.cmc-content table tbody td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  vertical-align: top;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.cmc-content table tbody td:last-child {
+  border-right: none;
+}
+
+.cmc-content table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.cmc-content table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+.cmc-content table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Column-specific styling */
+.cmc-content table th:first-child,
+.cmc-content table td:first-child {
+  min-width: 150px;
+  font-weight: 500;
+  position: sticky;
+  left: 0;
+  background-color: inherit;
+  z-index: 2;
+}
+
+.cmc-content table th:nth-child(2),
+.cmc-content table td:nth-child(2) {
+  min-width: 120px;
+}
+
+.cmc-content table th:nth-child(3),
+.cmc-content table td:nth-child(3) {
+  min-width: 200px;
+}
+
+.cmc-content table th:nth-child(n + 4),
+.cmc-content table td:nth-child(n + 4) {
+  text-align: center;
+  min-width: 90px;
+}
+
+/* Status indicators */
+.cmc-content table td {
+  color: inherit;
+}
+
+.cmc-content table td:contains('Complies'),
+.cmc-content .status-complies {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.cmc-content table td:contains('Fails'),
+.cmc-content .status-fails {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* Placeholder styling */
+.cmc-content table td:contains('[Value]') {
+  background-color: #fef3c7 !important;
+  font-style: italic;
+  color: #92400e;
+}
+
+.cmc-content table td:contains('[Specification Range]') {
+  background-color: #e0f2fe !important;
+  font-style: italic;
+  color: #0369a1;
+}
+
+/* Special table type styling */
+.cmc-content table.stability-table thead th {
+  background-color: #10b981;
+  color: white;
+}
+
+.cmc-content table.spec-table thead th {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Table captions */
+.cmc-content table caption {
+  caption-side: top;
+  padding: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .cmc-content table {
+    min-width: 900px;
+    font-size: 0.75rem;
+  }
+
+  .cmc-content table thead th,
+  .cmc-content table tbody td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.7rem;
+  }
+
+  .cmc-content table th:first-child,
+  .cmc-content table td:first-child {
+    min-width: 120px;
+  }
+
+  .cmc-content table th:nth-child(2),
+  .cmc-content table td:nth-child(2) {
+    min-width: 100px;
+  }
+
+  .cmc-content table th:nth-child(3),
+  .cmc-content table td:nth-child(3) {
+    min-width: 150px;
+  }
+
+  .cmc-content table th:nth-child(n + 4),
+  .cmc-content table td:nth-child(n + 4) {
+    min-width: 70px;
+  }
+
+  /* Mobile scroll indicator */
+  .table-container::after {
+    content: '← Scroll horizontally to view more data →';
+    display: block;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    padding: 0.5rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 0.375rem 0.375rem;
+  }
+
+  .table-container:hover::after {
+    opacity: 0.5;
+  }
+}
+
+/* Editor table styling when editing */
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+  min-width: 600px;
+}
+
+.ProseMirror table td,
+.ProseMirror table th {
+  border: 2px solid #ced4da;
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 8px 12px;
+  position: relative;
+  vertical-align: top;
+}
+
+.ProseMirror table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.ProseMirror table .selectedCell:after {
+  background: rgba(200, 200, 255, 0.4);
+  content: '';
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+/* Comment wrapper table styles */
+.comment-wrapper {
+  overflow-x: auto;
+}
+
+.comment-wrapper table {
+  width: 100%;
+  min-width: 400px;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.75rem;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+}
+
+.comment-wrapper table th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  padding: 0.5rem 0.25rem;
+  text-align: left;
+  border: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.comment-wrapper table td {
+  padding: 0.5rem 0.25rem;
+  border: 1px solid #e5e7eb;
+  vertical-align: top;
+  word-break: break-word;
+}
+
+.comment-wrapper table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.comment-wrapper .status-complies {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.comment-wrapper .status-fails {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .comment-wrapper table {
+    font-size: 0.7rem;
+    min-width: 300px;
+  }
+
+  .comment-wrapper table th,
+  .comment-wrapper table td {
+    padding: 0.25rem;
+  }
 }

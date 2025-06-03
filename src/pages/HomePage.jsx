@@ -28,19 +28,19 @@ const HomePage = () => {
     <div className='min-h-screen bg-gray-50'>
       {/* Hero section */}
       <div className='bg-gradient-to-r from-blue-600 to-blue-800 text-white'>
-        <div className='max-w-5xl mx-auto px-4 py-12 sm:py-16'>
-          <div className='flex flex-col md:flex-row justify-between items-center'>
-            <div className='mb-6 md:mb-0'>
-              <h1 className='text-4xl md:text-5xl font-bold mb-2'>
+        <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20'>
+          <div className='flex flex-col lg:flex-row justify-between items-center'>
+            <div className='mb-8 lg:mb-0 text-center lg:text-left'>
+              <h1 className='text-3xl sm:text-4xl lg:text-5xl font-bold mb-3'>
                 Religaire AI
               </h1>
-              <p className='text-blue-100 text-lg max-w-lg'>
+              <p className='text-blue-100 text-lg sm:text-xl max-w-2xl mx-auto lg:mx-0'>
                 Religaire Bio's AI powered IND preparation platform
               </p>
             </div>
             <button
               onClick={() => setDialogOpen(true)}
-              className='bg-white text-blue-700 hover:bg-blue-50 font-medium py-3 px-6 rounded-md shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center'
+              className='bg-white text-blue-700 hover:bg-blue-50 font-medium py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center text-base sm:text-lg'
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -54,23 +54,26 @@ const HomePage = () => {
                   clipRule='evenodd'
                 />
               </svg>
-              Create New Project
+              <span className='hidden sm:inline'>Create New Project</span>
+              <span className='sm:hidden'>New Project</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Content section */}
-      <div className='max-w-5xl mx-auto px-4 py-8'>
+      <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12'>
         {loading ? (
-          <Loader />
+          <div className='flex justify-center items-center min-h-[400px]'>
+            <Loader />
+          </div>
         ) : (
-          <div className='bg-white rounded-xl shadow-md p-6 sm:p-8 border border-gray-100'>
+          <div className='bg-white rounded-xl shadow-lg p-6 sm:p-8 lg:p-10 border border-gray-100'>
             {plans.length === 0 ? (
-              <div className='text-center py-10'>
+              <div className='text-center py-12 sm:py-16'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
-                  className='h-16 w-16 mx-auto text-gray-300 mb-4'
+                  className='h-16 w-16 sm:h-20 sm:w-20 mx-auto text-gray-300 mb-6'
                   fill='none'
                   viewBox='0 0 24 24'
                   stroke='currentColor'
@@ -82,16 +85,16 @@ const HomePage = () => {
                     d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
                   />
                 </svg>
-                <h2 className='text-2xl font-semibold text-gray-700 mb-2'>
+                <h2 className='text-2xl sm:text-3xl font-semibold text-gray-700 mb-3'>
                   No IND Projects Yet
                 </h2>
-                <p className='text-gray-500 mb-6 max-w-md mx-auto'>
+                <p className='text-gray-500 mb-8 max-w-md mx-auto text-base sm:text-lg'>
                   Create your first IND project to begin the regulatory
                   submission process
                 </p>
                 <button
                   onClick={() => setDialogOpen(true)}
-                  className='bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md shadow transition-colors duration-200'
+                  className='bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow transition-colors duration-200 text-base sm:text-lg'
                 >
                   Create Your First Project
                 </button>
