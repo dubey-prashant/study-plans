@@ -541,7 +541,7 @@ const INDApplication = ({ plan, setPlan }) => {
 
         setGenerationProgress({
           active: true,
-          currentSection: `Generating ${section.name}`,
+          currentSection: section.name,
           completedSections: i,
           totalSections: sections.length,
         });
@@ -564,45 +564,50 @@ const INDApplication = ({ plan, setPlan }) => {
             content: combinedContent,
           });
 
-          // Update the plan with current progress
-          await updateIND(newPlan.id, {
-            ...newPlan.INDApplication,
-            content: combinedContent,
-          });
-
-          setGenerationProgress({
-            active: true,
-            currentSection: `Completed ${section.name}`,
-            completedSections: i + 1,
-            totalSections: sections.length,
-          });
-
           // Small delay between sections to prevent rate limiting
           await new Promise((resolve) => setTimeout(resolve, 1000));
         } catch (error) {
           console.error(`Error generating section ${section.name}:`, error);
           // Continue with next section even if one fails
           combinedContent += `<h2>${section.name}</h2><p>Error generating this section. Please try regenerating.</p>\n\n`;
+
+          setInProgressDocument({
+            title: title || 'IND Application',
+            description: description || additionalInfo,
+            content: combinedContent,
+          });
         }
       }
 
-      // Final update with complete content
-      const finalPlan = await updateIND(newPlan.id, {
+      // Final progress update
+      setGenerationProgress({
+        active: true,
+        currentSection: 'Finalizing document',
+        completedSections: sections.length,
+        totalSections: sections.length,
+      });
+
+      // Update with generated content
+      const finalPlan = await updateIND(plan.id, {
         ...newPlan.INDApplication,
         content: combinedContent,
       });
 
-      console.log(
-        'New IND Application created with section-by-section generation:',
-        finalPlan
-      );
+      console.log('New IND Application created:', finalPlan);
       setPlan(finalPlan);
 
+      // Reset states
+      setIsCreating(false);
       setGenerationProgress({
         active: false,
-        currentSection: 'Generation completed',
-        completedSections: sections.length,
-        totalSections: sections.length,
+        currentSection: '',
+        completedSections: 0,
+        totalSections: 9,
+      });
+      setInProgressDocument({
+        title: '',
+        description: '',
+        content: '',
       });
 
       setAdditionalInfo('');
@@ -610,7 +615,7 @@ const INDApplication = ({ plan, setPlan }) => {
       console.error('Error creating IND Application:', error);
       setGenerationProgress({
         active: false,
-        currentSection: 'Generation failed',
+        currentSection: '',
         completedSections: 0,
         totalSections: 9,
       });
@@ -640,47 +645,38 @@ const INDApplication = ({ plan, setPlan }) => {
         <h2 className='text-2xl font-bold mb-4 text-gray-800'>
           IND Application
         </h2>
-        <div className='flex flex-col items-center justify-center py-8'>
-          <Loader />
-          <div className='mt-4 text-center'>
-            <p className='text-gray-600 mb-2'>
-              {generationProgress.currentSection}
-            </p>
-            <div className='w-full bg-gray-200 rounded-full h-2.5 mt-3'>
-              <div
-                className='bg-blue-600 h-2.5 rounded-full transition-all duration-300'
-                style={{
-                  width: `${
-                    (generationProgress.completedSections /
-                      generationProgress.totalSections) *
-                    100
-                  }%`,
-                }}
-              ></div>
-            </div>
-            <p className='text-sm text-gray-500 mt-2'>
-              Section {generationProgress.completedSections} of{' '}
-              {generationProgress.totalSections} completed
-            </p>
+
+        {/* Generation Progress Indicator */}
+        <div className='mb-6'>
+          <div className='flex justify-between items-center mb-2'>
+            <span className='text-md font-medium text-gray-800'>
+              Generating: {generationProgress.currentSection}
+            </span>
+            <span className='text-sm font-medium text-gray-700'>
+              {Math.round(
+                (generationProgress.completedSections /
+                  generationProgress.totalSections) *
+                  100
+              )}
+              %
+            </span>
+          </div>
+          <div className='w-full bg-gray-200 rounded-full h-2.5'>
+            <div
+              className='bg-blue-600 h-2.5 rounded-full transition-all duration-500'
+              style={{
+                width: `${
+                  (generationProgress.completedSections /
+                    generationProgress.totalSections) *
+                  100
+                }%`,
+              }}
+            />
           </div>
         </div>
 
-        {/* Show in-progress content if available */}
-        {inProgressDocument.content &&
-          inProgressDocument.content !== '<p>Generating content...</p>' && (
-            <div className='mt-6'>
-              <h3 className='text-lg font-semibold mb-3'>
-                Generated Content (In Progress)
-              </h3>
-              <div className='bg-gray-50 border border-gray-200 rounded-md p-4 max-h-96 overflow-y-auto'>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: inProgressDocument.content,
-                  }}
-                />
-              </div>
-            </div>
-          )}
+        {/* In-Progress Document Preview */}
+        <Details data={inProgressDocument} showActions={false} />
       </div>
     );
   }
@@ -950,7 +946,7 @@ const INDApplication = ({ plan, setPlan }) => {
   return (
     <div className='max-w-4xl mx-auto md:px-4'>
       {/* Header with delete button */}
-      {/* <div className='flex justify-between items-center mb-6'>
+      <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold text-gray-800'>IND Application</h1>
         <button
           onClick={() => setDeleteDialogOpen(true)}
@@ -971,7 +967,7 @@ const INDApplication = ({ plan, setPlan }) => {
           </svg>
           Delete
         </button>
-      </div> */}
+      </div>
 
       {isValidating && (
         <div className='mb-6 bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-md flex items-center'>
